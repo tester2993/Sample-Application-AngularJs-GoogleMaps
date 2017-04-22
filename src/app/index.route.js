@@ -10,8 +10,8 @@
     $stateProvider
       .state('home', {
         url: '/',
-        templateUrl: 'app/main/main.html',
-        controller: 'MainController',
+        templateUrl: 'app/views/tweets_list.html',
+        controller: 'TweetsList',
         controllerAs: 'main'
       });
 
