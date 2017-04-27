@@ -8,13 +8,11 @@
   /** @ngInject */
   function routerConfig($stateProvider, $urlRouterProvider) {
     $stateProvider
-      .state('home', {
+      .state('Home', {
         url: '/',
-        templateUrl: 'app/views/tweets_list.html',
-        controller: 'TweetsList',
-        controllerAs: 'main'
+        templateUrl: 'app/views/main.html',
+        controller: 'MainCtrl'
       });
-
     $urlRouterProvider.otherwise('/');
   }
 

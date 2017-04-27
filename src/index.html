@@ -2,9 +2,13 @@
 <html ng-app="twitter">
   <head>
     <meta charset="utf-8">
-    <title>twitter</title>
+    <title>AngularJS & GoogleMaps Sample Application</title>
     <meta name="description" content="">
     <meta name="viewport" content="width=device-width">
+    <script src="//platform.twitter.com/widgets.js"></script>
+    <script src="https://maps.googleapis.com/maps/api/js"></script>
+    <script src="app/components/oauth.js"></script>
+    <link rel="shortcut icon" href="//abs.twimg.com/favicons/favicon.ico" type="image/x-icon">
     <!-- Place favicon.ico and apple-touch-icon.png in the root directory -->
 
     <!-- build:css({.tmp/serve,src}) styles/vendor.css -->
@@ -23,8 +27,10 @@
     <!--[if lt IE 10]>
       <p class="browsehappy">You are using an <strong>outdated</strong> browser. Please <a href="http://browsehappy.com/">upgrade your browser</a> to improve your experience.</p>
     <![endif]-->
+    <div class="wrap" ng-controller="MainCtrl">
+        <div ui-view></div>
+    </div>
 
-    <div ui-view></div>
 
     <!-- build:js(src) scripts/vendor.js -->
     <!-- bower:js -->

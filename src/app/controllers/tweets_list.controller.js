@@ -1,84 +1,79 @@
 var app = angular.module('twitter');
 
-app.controller('TweetsList', function($scope, $resource, $timeout) {
+app.controller('TweetsList', function($scope, $q, twitterService, $resource, $timeout) {
+  twitterService.initialize();
+  $scope.latLng;
+  $scope.MoreTweetsTitle = 'Get More Tweets';
 
-  /**
-   * init controller and set defaults
-   */
-  function init () {
+  $scope.init = function() {
+      $scope.tweetsResult = []; // empty tweet model
+      $scope.getTweets();
+  };
 
-    // set a default username value
-    $scope.username = "twitterdev";
-
-    // empty tweet model
-    $scope.tweetsResult = [];
-
-    // initiate masonry.js
-    // $scope.msnry = new Masonry('#tweet-list', {
-    //   columnWidth: 320,
-    //   itemSelector: '.tweet-item',
-    //   transitionDuration: 0,
-    //   isFitWidth: true
-    // });
-
-    // layout masonry.js on widgets.js loaded event
-    // twttr.events.bind('loaded', function () {
-    //   // $scope.msnry.reloadItems();
-    //   // $scope.msnry.layout();
-    // });
-
-    $scope.getTweets();
-  }
-
-  /**
-   * requests and processes tweet data
-   */
-  function getTweets (paging) {
-
-    var params = {
-      action: 'user_timeline',
-      user: $scope.username
-    };
-
-    if ($scope.maxId) {
-      params.max_id = $scope.maxId;
+  $scope.getTweets = function (paging, latLng) {
+    if (latLng){
+      $scope.latLng = latLng;
+      $scope.tweetsResult = [];
     }
+    if (angular.isUndefined(paging)) {
+      $scope.tweetsResult = [];
+    }
+    $scope.Tweets();
+  };
 
-    // create Tweet data resource
-    $scope.tweets = $resource('http://localhost:5000/tweets/:action/:user', params);
-    // GET request using the resource
-    $scope.tweets.query( { }, function (res) {
+  $scope.Tweets = function () {
+      var date = new Date(), params;
+      var today = date.getDate() + '/' + (date.getMonth() + 1) + '/' + date.getFullYear();
 
-      if( angular.isUndefined(paging) ) {
-        $scope.tweetsResult = [];
+      if ($scope.latLng){
+        params ='q=&geocode='+$scope.latLng.lat()+','+$scope.latLng.lng()+',1km';
+      }else {
+        params = "q=" + today+"&count=" + 5;
+      }
+      if ($scope.maxId) {
+        params += "&max_id=" + $scope.maxId;
       }
 
-      $scope.tweetsResult = $scope.tweetsResult.concat(res);
-
-      // for paging - https://dev.twitter.com/docs/working-with-timelines
-      $scope.maxId = res[res.length - 1].id;
-
-      // render tweets with widgets.js
-      // $timeout(function () {
-      //   twttr.widgets.load();
-      // }, 30);
+      twitterService.getTweets(params).then(function (result) {
+      $scope.tweets = result.statuses ? result.statuses : result;
+      if ($scope.tweets[0]){
+        $scope.emptyTweets = false;
+        $scope.maxId = ($scope.tweets[$scope.tweets.length - 1].id) - 100;
+        $scope.oEmbed()
+      }else{
+        $scope.emptyTweets = true;
+        $scope.MoreTweetsTitle = 'No others Tweets';
+        $timeout(function () {
+          twttr.widgets.load();
+        }, 30);
+      }
     });
-  }
+  };
 
-  /**
-   * binded to @user input form
-   */
-  $scope.getTweets = function () {
-    $scope.maxId = undefined;
-    getTweets();
-  }
+  $scope.oEmbed = function () {
+    angular.forEach($scope.tweets, function(value, key) {
+      var oEmbed_params = 'id='+value.id_str+'&maxwidth=305&hide_thread=true&omit_script=true';
+      twitterService.getOEmbed(oEmbed_params).then(function (data) {
+        $scope.tweets[key].oEmbed = data;
+        $scope.tweetsResult.push($scope.tweets[key]);
+        $timeout(function () {
+          twttr.widgets.load();
+        }, 30);
+      })
+    });
+  };
 
   /**
    * binded to 'Get More Tweets' button
    */
   $scope.getMoreTweets = function () {
-    getTweets(true);
+    $scope.tweets = [];
+    $scope.getTweets(true);
+  };
+
+  if ($scope.auth_status){
+    $scope.init();
+    $scope.getUserData()
   }
 
-  init();
 });
