@@ -1,5 +1,5 @@
 # AngularJS
-Twitter & GoogleMaps Sample Application
+## Twitter & GoogleMaps Sample Application
   
   Login( sign up ) via twitter. The view will display a stream of last tweets in Default state. 
   The stream can be updated in real-time. There is a Google Maps with zoom level at which user able to see the whole world.
@@ -10,7 +10,7 @@ Twitter & GoogleMaps Sample Application
 # Install
 
 ## Clone project
-* git clone https://tester2993@bitbucket.org/tester2993/sample-application-angularjs-googlemaps.git
+* git clone https://github.com/tester2993/sample-angular-node-googleMaps.git
 * cd sample-application-angularjs-googlemaps
 ## Install node modules
 * **npm install**
